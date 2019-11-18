@@ -37,7 +37,8 @@ scale_colour_spectral <- function(...) {
 ##make plots
 #identify variables of interest to plot
 vars=c("temp", "salinity", "sw.density","chl.ug.l")
-
+##"x=phy_t[phy_t$transect.id == 'OST14-1W-Und']"= to check id "DM" works
+x=phy_t[phy_t$transect.id=="OST14-1W-Und",]
 ddply(.data = phy_t, .variables="transect.id", function(x){
   
   x=na.omit(x)
@@ -59,13 +60,24 @@ ddply(.data = phy_t, .variables="transect.id", function(x){
     theme(axis.text.x = element_blank(),
           axis.title.y = element_text(face = "bold", size = 12)) +
     ggtitle(label = unique(x$transect.id))
-  
+  png(file = paste0("plots/",unique(x$transect.id), ".png"), width = 8.5,
+      height = 14, units = "in", res = 300)
+  plot(tt)
+  dev.off()
 })
 
 
 
 
-
+s <- ggplot(dm[dm$variable == "salinity",], aes(x=dateTime, y=-depth_round)) +
+  geom_line(aes(colour=value, size = value), na.rm=T, show.legend = FALSE) +
+  scale_colour_gradient(high=spectral(), na.value=NA) +
+  # scale_x_datetime("Time", labels = date_format("%H:%M"), breaks = date_breaks("15 min"), minor_breaks = "5 min") +
+  scale_x_datetime(name = "") +
+  scale_y_continuous("depth", expand=c(0.01,0.01)) + facet_grid(variable~.) +
+  theme(strip.text.y = element_text(size = 10)) +
+  theme(axis.text.x = element_blank()) +
+  theme(axis.title = element_text(size = 12))
 
 
 
